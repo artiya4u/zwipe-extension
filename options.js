@@ -10,10 +10,6 @@ function setStatus(message) {
 function save_options() {
   let swipeDistance = document.getElementById('swipeDistance').value;
   let wheelCircumference = document.getElementById('wheelCircumference').value;
-  if (typeof swipeDistance !== 'number' || typeof wheelCircumference !== 'number') {
-    setStatus('Settings invalid value');
-    return;
-  }
 
   if (swipeDistance < 50) {
     setStatus('Settings out of supported range: swipeDistance < 50m');
