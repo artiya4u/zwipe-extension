@@ -27,37 +27,34 @@ control.move = function (speed) {
 
   control.currentDistance += updatedDistance;
   control.lastMove = now;
-  console.log('AVG SPEED', control.averageSpeed);
-  console.log('currentDistance', control.currentDistance);
 
   let newNext = Math.floor(control.currentDistance / (control.targetDistance / 5));
   if (newNext > control.lastNext) {
     control.next();
   }
   control.lastNext = newNext;
-
+  let action = 'pass';
   let distanceDiff = control.currentDistance - control.targetDistance;
+  // Swipe
+  if (speed >= control.averageSpeed * control.superLikeThreshold) {
+    action = 'super-like';
+  } else if (speed >= control.averageSpeed * control.likeThreshold) {
+    // Attack >> Like
+    action = 'like';
+  } else {
+    // Pass
+    action = 'pass';
+  }
+  console.log(action);
+
+  // Last effort
   if (distanceDiff >= 0 && control.averageSpeed > 0) {
     if (distanceDiff < 10) {  // Prevent over adjust current distance.
       control.currentDistance = distanceDiff;
     } else {
       control.currentDistance = 0;
     }
-
-    // Swipe
-    if (speed >= control.averageSpeed * control.superLikeThreshold) {
-      // Sprint >> Super like
-      console.log('⭐ Super Like!', speed, control.averageSpeed * control.superLikeThreshold);
-      control.action('super-like');
-    } else if (speed >= control.averageSpeed * control.likeThreshold) {
-      // Attack >> Like
-      console.log('💗 Like', speed, control.averageSpeed * control.likeThreshold);
-      control.action('like');
-    } else {
-      // Pass
-      console.log('❌ Pass', speed, control.averageSpeed * control.superLikeThreshold);
-      control.action('pass');
-    }
+    control.action(action);
   }
 };
 
@@ -68,6 +65,7 @@ control.action = function (action) {
     return;
   }
   if (action === 'super-like') {
+    console.log('⭐ Send Super Like!');
     let noSuperLike = bnts[2].parentNode.parentNode.querySelectorAll("span[aria-label=\"0 remaining\"]");
     if (noSuperLike.length === 1) {
       // No super like, send like
@@ -77,8 +75,10 @@ control.action = function (action) {
       bnts[2].click();
     }
   } else if (action === 'like') {
+    console.log('💗 Send Like!');
     bnts[3].click();
   } else { // pass
+    console.log('❌ Send Pass');
     bnts[1].click();
   }
 }
