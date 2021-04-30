@@ -8,7 +8,13 @@ const control = {
   updateCount: 0,
   overallDistance: 0,
   currentDistance: 0,
+  lastNext: 1,
 };
+
+control.next = function () {
+  let e = new KeyboardEvent('keyup', {'keyCode': 32, 'which': 32});
+  document.dispatchEvent(e);
+}
 
 control.move = function (speed) {
   control.sumSpeed += speed;
@@ -23,6 +29,13 @@ control.move = function (speed) {
   control.lastMove = now;
   console.log('AVG SPEED', control.averageSpeed);
   console.log('currentDistance', control.currentDistance);
+
+  let newNext = Math.floor(control.currentDistance / (control.targetDistance / 5));
+  if (newNext > control.lastNext) {
+    control.next();
+  }
+  control.lastNext = newNext;
+
   let distanceDiff = control.currentDistance - control.targetDistance;
   if (distanceDiff >= 0 && control.averageSpeed > 0) {
     control.currentDistance = distanceDiff;
