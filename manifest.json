@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "Zwipe",
+  "description": "Tinder swipe on your bike",
+  "version": "0.0.1",
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
+  "icons": {
+    "128": "icon.png"
+  },
+  "permissions": [
+    "storage",
+    "https://tinder.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://tinder.com/app/recs"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}
