@@ -3,9 +3,8 @@ const control = {
   superLikeThreshold: 1.30, // +30%
   targetDistance: 100,
   lastMove: Date.now(),
-  sumSpeed: 0,
+  speedArr: [],
   averageSpeed: 0,
-  updateCount: 0,
   overallDistance: 0,
   currentDistance: 0,
   lastNext: 1,
@@ -16,13 +15,34 @@ control.next = function () {
   document.dispatchEvent(e);
 }
 
-control.move = function (speed) {
-  control.sumSpeed += speed;
-  control.updateCount += 1;
-  control.averageSpeed = control.sumSpeed / control.updateCount;
+function lastAvg(array, n) {
+  let avg = null;
+  if (array.length > n) {
+    const sum = array.slice(array.length - n, array.length).reduce((a, b) => a + b, 0);
+    avg = (sum / n) || 0;
+  }
+  return avg;
+}
 
+function toKPH(speed) {
+  return (speed * 3600 / 1000).toFixed(2);
+}
+
+control.move = function (speed) {
   let now = Date.now();
+  control.speedArr.push(speed);
+  control.averageSpeed = lastAvg(control.speedArr, 100);
+  if (control.averageSpeed === null) {
+    control.lastMove = now;
+    console.log('warm-up', '0.0', '0.00', toKPH(speed));
+    return;
+  }
+
   let timePass = (now - control.lastMove) / 1000;
+  if ((now - control.lastMove) / 1000 > 10) {
+    console.log('warm-up', '0.0', '0.00', toKPH(speed));
+    return;
+  }
   let updatedDistance = speed * timePass;
 
   control.currentDistance += updatedDistance;
@@ -45,22 +65,18 @@ control.move = function (speed) {
     // Pass
     action = 'pass';
   }
-  console.log(action);
-
+  console.log(action, control.currentDistance.toFixed(1), toKPH(control.averageSpeed), toKPH(speed));
+  console.log(distanceDiff);
   // Last effort
-  if (distanceDiff >= 0 && control.averageSpeed > 0) {
-    if (distanceDiff < 10) {  // Prevent over adjust current distance.
-      control.currentDistance = distanceDiff;
-    } else {
-      control.currentDistance = 0;
-    }
+  if (distanceDiff >= 0) {
+    control.currentDistance = distanceDiff;
     control.action(action);
   }
 };
 
 control.action = function (action) {
   let bnts = document.querySelectorAll('button.button');
-  if (bnts.length === 0) {
+  if (bnts.length !== 5) {
     // Not found buttons.
     return;
   }
@@ -81,6 +97,15 @@ control.action = function (action) {
     console.log('❌ Send Pass');
     bnts[1].click();
   }
+
+  // If popup
+  setTimeout(function () {
+    let bntsPopup = document.querySelectorAll('button.button');
+    if (bntsPopup.length > 5) {
+      // Close Popup -- No Thanks
+      bntsPopup[bntsPopup.length - 1].click();
+    }
+  }, 1500);
 }
 
 chrome.storage.sync.get(null, function (items) {
