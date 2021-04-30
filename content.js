@@ -38,7 +38,12 @@ control.move = function (speed) {
 
   let distanceDiff = control.currentDistance - control.targetDistance;
   if (distanceDiff >= 0 && control.averageSpeed > 0) {
-    control.currentDistance = distanceDiff;
+    if (distanceDiff < 10) {  // Prevent over adjust current distance.
+      control.currentDistance = distanceDiff;
+    } else {
+      control.currentDistance = 0;
+    }
+
     // Swipe
     if (speed >= control.averageSpeed * control.superLikeThreshold) {
       // Sprint >> Super like
@@ -63,7 +68,14 @@ control.action = function (action) {
     return;
   }
   if (action === 'super-like') {
-    bnts[2].click();
+    let noSuperLike = bnts[2].parentNode.parentNode.querySelectorAll("span[aria-label=\"0 remaining\"]");
+    if (noSuperLike.length === 1) {
+      // No super like, send like
+      bnts[3].click();
+    } else {
+      // Send super like
+      bnts[2].click();
+    }
   } else if (action === 'like') {
     bnts[3].click();
   } else { // pass
