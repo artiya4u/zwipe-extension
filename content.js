@@ -7,12 +7,32 @@ const control = {
   averageSpeed: 0,
   overallDistance: 0,
   currentDistance: 0,
-  lastNext: 1,
+  lastNext: 0,
 };
 
-control.next = function () {
+control.nextPhotoDesktop = function () { // Space to browse next photo. Only work on desktop mode.
   let e = new KeyboardEvent('keyup', {'keyCode': 32, 'which': 32});
   document.dispatchEvent(e);
+}
+
+control.nextPhoto = function () { // Browse next photo for active button.
+  let activeBullets = document.querySelectorAll("button.bullet.bullet--active");
+  for (let activeBullet of activeBullets) {
+    let bullet = activeBullet.nextSibling;
+    if (bullet !== null) {
+      bullet.click();
+    }
+  }
+}
+
+control.resetBrowseImage = function () { // Browse next photo for active button.
+  let activeBullets = document.querySelectorAll("button.bullet.bullet--active");
+  for (let activeBullet of activeBullets) {
+    let bullet = activeBullet.parentNode.firstChild;
+    if (bullet !== null) {
+      bullet.click();
+    }
+  }
 }
 
 function lastAvg(array, n) {
@@ -48,9 +68,10 @@ control.move = function (speed) {
   control.currentDistance += updatedDistance;
   control.lastMove = now;
 
-  let newNext = Math.floor(control.currentDistance / (control.targetDistance / 5));
+  const maxBrowsePhoto = 5;  // Browse photo max 5 times
+  let newNext = Math.floor(control.currentDistance / (control.targetDistance / maxBrowsePhoto));
   if (newNext > control.lastNext) {
-    control.next();
+    control.nextPhoto();
   }
   control.lastNext = newNext;
   let action = 'pass';
@@ -69,6 +90,10 @@ control.move = function (speed) {
   console.log(distanceDiff);
   // Last effort
   if (distanceDiff >= 0) {
+    if (distanceDiff > 20) {
+      control.currentDistance = 0;
+      return;
+    }
     control.currentDistance = distanceDiff;
     control.action(action);
   }
@@ -97,6 +122,8 @@ control.action = function (action) {
     console.log('❌ Send Pass');
     bnts[1].click();
   }
+
+  control.resetBrowseImage();
 
   // If popup
   setTimeout(function () {
