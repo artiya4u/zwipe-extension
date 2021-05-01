@@ -21,6 +21,11 @@ control.nextPhoto = function () { // Browse next photo for active button.
     let bullet = activeBullet.nextSibling;
     if (bullet !== null) {
       bullet.click();
+    } else {
+      bullet = activeBullet.parentNode.firstChild;
+      if (bullet !== null) {
+        bullet.click();
+      }
     }
   }
 }
