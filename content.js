@@ -48,6 +48,32 @@ function toKPH(speed) {
   return (speed * 3600 / 1000).toFixed(2);
 }
 
+control.processBrowsePhoto = function () {
+  const maxBrowsePhoto = 5;  // Browse photo max 5 times
+  let newNext = Math.floor(control.currentDistance / (control.targetDistance / maxBrowsePhoto));
+  if (newNext > control.lastNext) {
+    control.nextPhoto();
+  }
+  control.lastNext = newNext;
+}
+
+control.displayAction = function (action) {
+  let actionDivs = [];
+  if (action === 'super-like') {
+    actionDivs = document.querySelectorAll("div.Bdc\\(\\$c-superlike-blue\\)");
+  } else if (action === 'like') {
+    actionDivs = document.querySelectorAll("div.Bdc\\(\\$c-like-green\\)");
+  } else {
+    actionDivs = document.querySelectorAll("div.Bdc\\(\\$c-nope-red\\)");
+  }
+  for (const actionDiv of actionDivs) {
+    actionDiv.setAttribute("style", "opacity: 1;")
+    setTimeout(function () {
+      actionDiv.setAttribute("style", "opacity: 0;")
+    }, 200)
+  }
+}
+
 control.move = function (speed) {
   let now = Date.now();
   control.speedArr.push(speed);
@@ -68,12 +94,7 @@ control.move = function (speed) {
   control.currentDistance += updatedDistance;
   control.lastMove = now;
 
-  const maxBrowsePhoto = 5;  // Browse photo max 5 times
-  let newNext = Math.floor(control.currentDistance / (control.targetDistance / maxBrowsePhoto));
-  if (newNext > control.lastNext) {
-    control.nextPhoto();
-  }
-  control.lastNext = newNext;
+
   let action = 'pass';
   let distanceDiff = control.currentDistance - control.targetDistance;
   // Swipe
@@ -86,6 +107,10 @@ control.move = function (speed) {
     // Pass
     action = 'pass';
   }
+
+  control.processBrowsePhoto();
+  control.displayAction(action);
+
   console.log(action, control.currentDistance.toFixed(1), toKPH(control.averageSpeed), toKPH(speed));
   console.log(distanceDiff);
   // Last effort
