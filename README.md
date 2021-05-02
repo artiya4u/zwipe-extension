@@ -1,6 +1,9 @@
 # Zwipe Extension
 
-Swipe Tinder on your bike - Chrome extension
+## Swipe Tinder on your bike - Chrome Extension
+
+Zwipe enables you to swipe Tinder while riding your indoor bike. It can help you get fit and find your date at the same
+time. It's fun and engaging experience.
 
 ### Requirements
 
