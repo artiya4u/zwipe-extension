@@ -180,7 +180,7 @@ chrome.storage.sync.get(null, function (items) {
   // Create WebSocket connection.
   const socket = new WebSocket('ws://127.0.0.1:48008');
   socket.onerror = function (event) {
-    alert("Cannot connect to Zwipe on your PC!");
+    alert("Cannot connect to Zwipe on your PC! Refresh to try again.");
     console.error("WebSocket error observed:", event);
   };
 
