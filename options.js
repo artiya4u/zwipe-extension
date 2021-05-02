@@ -12,12 +12,12 @@ function save_options() {
   let wheelCircumference = document.getElementById('wheelCircumference').value;
 
   if (swipeDistance < 50) {
-    setStatus('Settings out of supported range: swipeDistance < 50m');
+    setStatus('Swipe distance must more than 50m');
     return;
   }
 
   if (wheelCircumference < 0.935 || wheelCircumference > 2.326) {
-    setStatus('Settings out of supported range: wheelCircumference  < 0.935m or > 2.326m');
+    setStatus('Wheel circumference must more than 0.935m and less than 2.326m');
     return;
   }
 
